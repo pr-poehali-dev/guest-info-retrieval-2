@@ -75,10 +75,11 @@ const Index = () => {
       }
 
       if (!response.ok || data.error || data.errorMessage) {
-        const msg = data.error || data.errorMessage || data.message || `Ошибка ${response.status}`;
+        const rawMsg = data.error || data.errorMessage || data.message;
+        const msg = typeof rawMsg === "object" ? (rawMsg?.message || JSON.stringify(rawMsg)) : (rawMsg || `Ошибка ${response.status}`);
         toast({
           title: response.status === 404 ? "Гость не найден" : "Ошибка",
-          description: msg,
+          description: String(msg),
           variant: "destructive",
         });
         setGuest(null);
