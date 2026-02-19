@@ -4,18 +4,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 interface GuestData {
+  clientId?: number;
   name: string;
   phone: string;
   email?: string;
   birthday?: string;
   cardNumber?: string;
+  cardBarcode?: string;
   templateName?: string;
   bonusBalance?: number;
+  maxPercentBonusWriteOff?: number;
+  discountPercent?: number;
+  depositBalance?: number;
   totalSpent?: number;
-  visits?: number;
-  registrationDate?: string;
   gender?: string;
   comment?: string;
+  tags?: string[];
 }
 
 interface GuestProfileProps {
@@ -27,11 +31,13 @@ const StatCard = ({
   icon,
   label,
   value,
+  suffix,
   delay,
 }: {
   icon: string;
   label: string;
   value: string;
+  suffix?: string;
   delay: string;
 }) => (
   <div
@@ -44,7 +50,10 @@ const StatCard = ({
       </div>
       <span className="text-xs text-muted-foreground font-medium">{label}</span>
     </div>
-    <p className="text-xl font-bold text-foreground">{value}</p>
+    <p className="text-xl font-bold text-foreground">
+      {value}
+      {suffix && <span className="text-sm font-normal text-muted-foreground ml-1">{suffix}</span>}
+    </p>
   </div>
 );
 
@@ -82,6 +91,9 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
             <div>
               <h2 className="text-2xl font-bold text-foreground">{guest.name}</h2>
               <p className="text-muted-foreground text-sm mt-0.5">{guest.phone}</p>
+              {guest.clientId && (
+                <p className="text-muted-foreground text-xs mt-1">ID: {guest.clientId}</p>
+              )}
             </div>
           </div>
           {guest.templateName && (
@@ -91,30 +103,44 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
           )}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <StatCard
             icon="Coins"
             label="Бонусы"
-            value={guest.bonusBalance?.toLocaleString("ru-RU") ?? "0"}
+            value={(guest.bonusBalance ?? 0).toLocaleString("ru-RU")}
             delay="0.1s"
           />
           <StatCard
-            icon="Wallet"
-            label="Потрачено"
-            value={`${(guest.totalSpent ?? 0).toLocaleString("ru-RU")} ₽`}
+            icon="Percent"
+            label="Скидка"
+            value={`${guest.discountPercent ?? 0}%`}
             delay="0.2s"
           />
           <StatCard
-            icon="CalendarCheck"
-            label="Визиты"
-            value={String(guest.visits ?? 0)}
+            icon="Wallet"
+            label="Депозит"
+            value={(guest.depositBalance ?? 0).toLocaleString("ru-RU")}
+            suffix="₽"
             delay="0.3s"
+          />
+          <StatCard
+            icon="ArrowDownCircle"
+            label="Макс. списание"
+            value={`${guest.maxPercentBonusWriteOff ?? 0}%`}
+            delay="0.4s"
+          />
+          <StatCard
+            icon="Receipt"
+            label="Сумма покупок"
+            value={(guest.totalSpent ?? 0).toLocaleString("ru-RU")}
+            suffix="₽"
+            delay="0.5s"
           />
           <StatCard
             icon="CreditCard"
             label="Карта"
             value={guest.cardNumber ?? "—"}
-            delay="0.4s"
+            delay="0.6s"
           />
         </div>
       </div>
@@ -126,9 +152,21 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
         </h3>
         <InfoRow label="Email" value={guest.email} />
         <InfoRow label="Дата рождения" value={guest.birthday} />
-        <InfoRow label="Пол" value={guest.gender === "male" ? "Мужской" : guest.gender === "female" ? "Женский" : guest.gender} />
-        <InfoRow label="Дата регистрации" value={guest.registrationDate} />
+        <InfoRow label="Пол" value={guest.gender} />
+        <InfoRow label="Штрих-код карты" value={guest.cardBarcode} />
         <InfoRow label="Комментарий" value={guest.comment} />
+        {guest.tags && guest.tags.length > 0 && (
+          <div className="flex items-center justify-between py-3">
+            <span className="text-sm text-muted-foreground">Теги</span>
+            <div className="flex gap-1.5 flex-wrap justify-end">
+              {guest.tags.map((tag, i) => (
+                <Badge key={i} variant="secondary" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 mt-6">

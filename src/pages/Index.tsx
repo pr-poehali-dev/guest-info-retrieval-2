@@ -8,18 +8,22 @@ import SettingsPanel from "@/components/SettingsPanel";
 import HelpPanel from "@/components/HelpPanel";
 
 interface GuestData {
+  clientId?: number;
   name: string;
   phone: string;
   email?: string;
   birthday?: string;
   cardNumber?: string;
+  cardBarcode?: string;
   templateName?: string;
   bonusBalance?: number;
+  maxPercentBonusWriteOff?: number;
+  discountPercent?: number;
+  depositBalance?: number;
   totalSpent?: number;
-  visits?: number;
-  registrationDate?: string;
   gender?: string;
   comment?: string;
+  tags?: string[];
 }
 
 const OPEN_API_BASE = "https://open-api.p-h.app/api/v2";
@@ -52,12 +56,10 @@ const Index = () => {
     try {
       const formattedPhone = phone.startsWith("7") ? phone : "7" + phone;
 
-      const url = `${OPEN_API_BASE}/getClient?token=${encodeURIComponent(apiToken)}&phone=${formattedPhone}`;
-      console.log("Fetching:", url.replace(apiToken, "***"));
+      const url = `${OPEN_API_BASE}/clientInfo?token=${encodeURIComponent(apiToken)}&type=phone&id=${formattedPhone}`;
 
       const response = await fetch(url);
       const text = await response.text();
-      console.log("Response status:", response.status, "body:", text.substring(0, 500));
 
       let data;
       try {
@@ -73,37 +75,38 @@ const Index = () => {
       }
 
       if (!response.ok || data.error || data.errorMessage) {
+        const msg = data.error || data.errorMessage || data.message || `Ошибка ${response.status}`;
         toast({
-          title: "Ошибка",
-          description: data.error || data.errorMessage || data.message || `Ошибка ${response.status}`,
+          title: response.status === 404 ? "Гость не найден" : "Ошибка",
+          description: msg,
           variant: "destructive",
         });
         setGuest(null);
         return;
       }
 
-      const client = data.client || data.guest || data.data || data;
-      console.log("Client data:", JSON.stringify(client).substring(0, 500));
+      const c = data.response || data;
 
-      const getName = () => {
-        if (client.name) return client.name;
-        const parts = [client.lastName, client.firstName, client.middleName].filter(Boolean);
-        return parts.length > 0 ? parts.join(" ") : "Гость";
-      };
+      const nameParts = [c.lastName, c.firstName, c.patronymic].filter(Boolean);
+      const name = nameParts.length > 0 ? nameParts.join(" ") : "Гость";
 
       setGuest({
-        name: getName(),
-        phone: `+${formattedPhone}`,
-        email: client.email || undefined,
-        birthday: client.birthday || client.birthDate || client.dateOfBirth || undefined,
-        cardNumber: client.cardNumber || client.card?.number || client.walletCardNumber || undefined,
-        templateName: client.templateName || client.card?.templateName || client.loyaltyLevel || client.template?.name || undefined,
-        bonusBalance: client.bonusBalance ?? client.balance ?? client.card?.balance ?? client.wallet?.balance ?? 0,
-        totalSpent: client.totalSum ?? client.totalSpent ?? client.sumOfOrders ?? 0,
-        visits: client.totalVisits ?? client.visits ?? client.ordersCount ?? 0,
-        registrationDate: client.registrationDate || client.createdAt || client.createDate || undefined,
-        gender: client.gender || client.sex || undefined,
-        comment: client.comment || client.note || undefined,
+        clientId: c.clientId,
+        name,
+        phone: c.phone ? `+${c.phone}` : `+${formattedPhone}`,
+        email: c.email || undefined,
+        birthday: c.birthday || undefined,
+        cardNumber: c.cardNumber || undefined,
+        cardBarcode: c.cardBarcode || undefined,
+        templateName: c.templateName || undefined,
+        bonusBalance: c.bonusBalance ?? 0,
+        maxPercentBonusWriteOff: c.maxPercentBonusWriteOff ?? undefined,
+        discountPercent: c.discountPercent ?? undefined,
+        depositBalance: c.depositBalance ?? undefined,
+        totalSpent: c.sumAllDisсount ?? c.sumAllDiscount ?? 0,
+        gender: c.sex === "1" ? "Мужской" : c.sex === "2" ? "Женский" : undefined,
+        comment: c.comment || undefined,
+        tags: c.tags || undefined,
       });
 
       toast({ title: "Гость найден!" });
