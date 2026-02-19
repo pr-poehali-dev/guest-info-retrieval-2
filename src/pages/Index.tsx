@@ -6,6 +6,7 @@ import GuestProfile from "@/components/GuestProfile";
 import HistoryPanel from "@/components/HistoryPanel";
 import SettingsPanel from "@/components/SettingsPanel";
 import HelpPanel from "@/components/HelpPanel";
+import Icon from "@/components/ui/icon";
 
 interface GuestData {
   clientId?: number;
@@ -55,7 +56,6 @@ const Index = () => {
     setIsLoading(true);
     try {
       const formattedPhone = phone.startsWith("7") ? phone : "7" + phone;
-
       const url = `${OPEN_API_BASE}/clientInfo?token=${encodeURIComponent(apiToken)}&type=phone&id=${formattedPhone}`;
 
       const response = await fetch(url);
@@ -139,14 +139,14 @@ const Index = () => {
       case "profile":
         return (
           <div className="animate-fade-in text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-float">
-              <span className="text-3xl">👤</span>
+            <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center mx-auto mb-4">
+              <Icon name="User" size={24} className="text-primary" />
             </div>
-            <h2 className="text-xl font-bold mb-2">Профиль не загружен</h2>
-            <p className="text-muted-foreground text-sm">Сначала найдите гостя через поиск</p>
+            <h2 className="text-lg font-semibold text-foreground mb-1">Профиль не загружен</h2>
+            <p className="text-sm text-muted-foreground">Сначала найдите гостя через поиск</p>
             <button
               onClick={() => setActiveTab("search")}
-              className="mt-4 text-sm text-[var(--gradient-start)] hover:underline font-medium"
+              className="mt-3 text-sm text-primary hover:underline font-medium"
             >
               Перейти к поиску →
             </button>
@@ -164,16 +164,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[var(--gradient-start)] opacity-[0.03] blur-[120px]" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[var(--gradient-end)] opacity-[0.03] blur-[120px]" />
-      </div>
-
+    <div className="min-h-screen bg-background">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <main className="ml-[72px] md:ml-[240px] min-h-screen relative z-10">
-        <div className="max-w-4xl mx-auto px-6 py-12">
+      <main className="ml-[64px] md:ml-[220px] min-h-screen">
+        <div className="max-w-4xl mx-auto px-6 py-8">
           {renderContent()}
         </div>
       </main>

@@ -32,25 +32,20 @@ const StatCard = ({
   label,
   value,
   suffix,
-  delay,
 }: {
   icon: string;
   label: string;
   value: string;
   suffix?: string;
-  delay: string;
 }) => (
-  <div
-    className="glass rounded-xl p-4 hover-lift animate-fade-in"
-    style={{ animationDelay: delay }}
-  >
-    <div className="flex items-center gap-3 mb-2">
-      <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-        <Icon name={icon} size={18} className="text-[var(--gradient-start)]" />
+  <div className="bg-white rounded-xl border border-border/60 shadow-sm p-4 card-hover">
+    <div className="flex items-center gap-2.5 mb-3">
+      <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center">
+        <Icon name={icon} size={16} className="text-primary" />
       </div>
       <span className="text-xs text-muted-foreground font-medium">{label}</span>
     </div>
-    <p className="text-xl font-bold text-foreground">
+    <p className="text-xl font-semibold text-foreground">
       {value}
       {suffix && <span className="text-sm font-normal text-muted-foreground ml-1">{suffix}</span>}
     </p>
@@ -60,7 +55,7 @@ const StatCard = ({
 const InfoRow = ({ label, value }: { label: string; value?: string }) => {
   if (!value) return null;
   return (
-    <div className="flex items-center justify-between py-3 border-b border-white/[0.04] last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-border/40 last:border-0">
       <span className="text-sm text-muted-foreground">{label}</span>
       <span className="text-sm font-medium text-foreground">{value}</span>
     </div>
@@ -72,82 +67,76 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
     <div className="animate-fade-in">
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 group"
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-all duration-200 mb-6 group"
       >
         <Icon
           name="ArrowLeft"
-          size={16}
-          className="group-hover:-translate-x-1 transition-transform"
+          size={14}
+          className="group-hover:-translate-x-0.5 transition-transform duration-200"
         />
         Назад к поиску
       </button>
 
-      <div className="glass-strong rounded-2xl p-6 mb-6 animate-scale-in">
+      <div className="bg-white rounded-xl border border-border/60 shadow-sm p-6 mb-4 animate-scale-in">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center animate-float">
-              <Icon name="User" size={28} className="text-white" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Icon name="User" size={24} className="text-primary" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{guest.name}</h2>
-              <p className="text-muted-foreground text-sm mt-0.5">{guest.phone}</p>
+              <h2 className="text-xl font-semibold text-foreground">{guest.name}</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">{guest.phone}</p>
               {guest.clientId && (
-                <p className="text-muted-foreground text-xs mt-1">ID: {guest.clientId}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">ID: {guest.clientId}</p>
               )}
             </div>
           </div>
           {guest.templateName && (
-            <Badge className="gradient-bg text-white border-0 px-3 py-1 font-semibold">
+            <Badge className="rounded-full bg-primary/10 text-primary border-0 px-3 py-1 text-xs font-medium">
               {guest.templateName}
             </Badge>
           )}
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard
             icon="Coins"
             label="Бонусы"
             value={(guest.bonusBalance ?? 0).toLocaleString("ru-RU")}
-            delay="0.1s"
           />
           <StatCard
             icon="Percent"
             label="Скидка"
             value={`${guest.discountPercent ?? 0}%`}
-            delay="0.2s"
           />
           <StatCard
             icon="Wallet"
             label="Депозит"
             value={(guest.depositBalance ?? 0).toLocaleString("ru-RU")}
             suffix="₽"
-            delay="0.3s"
           />
           <StatCard
             icon="ArrowDownCircle"
             label="Макс. списание"
             value={`${guest.maxPercentBonusWriteOff ?? 0}%`}
-            delay="0.4s"
           />
           <StatCard
             icon="Receipt"
             label="Сумма покупок"
             value={(guest.totalSpent ?? 0).toLocaleString("ru-RU")}
             suffix="₽"
-            delay="0.5s"
           />
           <StatCard
             icon="CreditCard"
             label="Карта"
             value={guest.cardNumber ?? "—"}
-            delay="0.6s"
           />
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-6 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Icon name="Info" size={18} className="text-[var(--gradient-start)]" />
+      <div className="bg-white rounded-xl border border-border/60 shadow-sm p-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <h3 className="text-base font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Icon name="Info" size={16} className="text-primary" />
           Информация о госте
         </h3>
         <InfoRow label="Email" value={guest.email} />
@@ -160,7 +149,7 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
             <span className="text-sm text-muted-foreground">Теги</span>
             <div className="flex gap-1.5 flex-wrap justify-end">
               {guest.tags.map((tag, i) => (
-                <Badge key={i} variant="secondary" className="text-xs">
+                <Badge key={i} variant="secondary" className="text-xs rounded-full">
                   {tag}
                 </Badge>
               ))}
@@ -169,13 +158,13 @@ const GuestProfile = ({ guest, onBack }: GuestProfileProps) => {
         )}
       </div>
 
-      <div className="flex gap-3 mt-6">
+      <div className="mt-4">
         <Button
           variant="outline"
           onClick={onBack}
-          className="flex-1 h-12 glass border-white/[0.08] text-foreground hover:bg-white/[0.06]"
+          className="h-10 rounded-[10px] gap-2 text-sm border-border/60"
         >
-          <Icon name="Search" size={16} className="mr-2" />
+          <Icon name="Search" size={14} />
           Новый поиск
         </Button>
       </div>

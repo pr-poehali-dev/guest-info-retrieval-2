@@ -10,43 +10,43 @@ const faqs = [
   {
     icon: "Key",
     title: "Где взять API-токен?",
-    text: "Токен можно получить в личном кабинете PRIME HILL в разделе «Интеграции» → «API». Скопируйте loyaltyAPI токен.",
+    text: "Токен можно получить в личном кабинете PRIME HILL в разделе «Интеграции» → «API». Скопируйте openAPI токен.",
   },
   {
     icon: "Shield",
     title: "Безопасность данных",
-    text: "API-токен хранится только в вашем браузере. Все запросы к PRIME HILL выполняются через защищённый HTTPS-протокол.",
+    text: "API-токен хранится только в вашем браузере. Все запросы выполняются через защищённый HTTPS-протокол.",
   },
   {
     icon: "Users",
     title: "Информация о госте",
-    text: "После поиска вы увидите профиль гостя: имя, бонусный баланс, уровень карты, количество визитов и историю.",
+    text: "После поиска вы увидите профиль гостя: имя, бонусный баланс, скидку, депозит и контактные данные.",
   },
 ];
 
 const HelpPanel = () => {
   return (
     <div className="animate-fade-in">
-      <h2 className="text-2xl font-bold mb-2">
-        <span className="gradient-text">Справка</span>
-      </h2>
-      <p className="text-muted-foreground mb-8">
-        Ответы на частые вопросы по работе с системой
-      </p>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-foreground mb-1">Справка</h1>
+        <p className="text-muted-foreground">
+          Ответы на частые вопросы по работе с системой
+        </p>
+      </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {faqs.map((faq, i) => (
           <div
             key={i}
-            className="glass-strong rounded-2xl p-5 hover-lift animate-fade-in"
-            style={{ animationDelay: `${i * 0.1}s` }}
+            className="bg-white rounded-xl border border-border/60 shadow-sm p-5 card-hover animate-fade-in"
+            style={{ animationDelay: `${i * 0.05}s` }}
           >
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Icon name={faq.icon} size={20} className="text-[var(--gradient-start)]" />
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/5 flex items-center justify-center flex-shrink-0">
+                <Icon name={faq.icon} size={16} className="text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">{faq.title}</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-1">{faq.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{faq.text}</p>
               </div>
             </div>
@@ -54,14 +54,14 @@ const HelpPanel = () => {
         ))}
       </div>
 
-      <div className="glass rounded-2xl p-6 mt-6 text-center">
+      <div className="bg-white rounded-xl border border-border/60 shadow-sm p-5 mt-4 text-center">
         <p className="text-sm text-muted-foreground">
           Документация API:{" "}
           <a
             href="https://api.prime-hill.com/loyaltyApi/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--gradient-start)] hover:underline font-medium"
+            className="text-primary hover:underline font-medium"
           >
             loyaltyAPI
           </a>
@@ -70,7 +70,7 @@ const HelpPanel = () => {
             href="https://api.prime-hill.com/openApi/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--gradient-start)] hover:underline font-medium"
+            className="text-primary hover:underline font-medium"
           >
             openAPI
           </a>

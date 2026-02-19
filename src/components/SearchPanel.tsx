@@ -50,62 +50,62 @@ const SearchPanel = ({ onSearch, isLoading }: SearchPanelProps) => {
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs text-muted-foreground mb-6 animate-scale-in">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-          Система активна
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-          Поиск{" "}
-          <span className="gradient-text">гостя</span>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-foreground mb-1">
+          Поиск гостя
         </h1>
-        <p className="text-muted-foreground text-lg max-w-md mx-auto">
-          Введите номер телефона для получения информации о госте
+        <p className="text-muted-foreground">
+          Введите номер телефона для получения информации из системы лояльности
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
-        <div className="relative group">
-          <div className="absolute -inset-0.5 gradient-bg rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm" />
-          <div className="relative glass-strong rounded-2xl p-2 flex items-center gap-2">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10">
-              <Icon name="Phone" size={20} className="text-[var(--gradient-start)]" />
+      <div className="bg-white rounded-xl border border-border/60 shadow-sm p-6">
+        <form onSubmit={handleSubmit}>
+          <label className="text-sm font-medium text-foreground mb-2 block">
+            Номер телефона
+          </label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                <Icon name="Phone" size={16} className="text-muted-foreground" />
+              </div>
+              <Input
+                ref={inputRef}
+                type="tel"
+                placeholder="+7 (___) ___-__-__"
+                value={phone}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                className="h-10 pl-9 rounded-[10px] text-sm border-border/60 focus-visible:ring-primary/20"
+              />
             </div>
-            <Input
-              ref={inputRef}
-              type="tel"
-              placeholder="+7 (___) ___-__-__"
-              value={phone}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              className="flex-1 h-12 bg-transparent border-0 text-lg font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
             <Button
               type="submit"
               disabled={digitsCount < 11 || isLoading}
-              className="h-12 px-6 rounded-xl gradient-bg border-0 text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-30"
+              className="h-10 px-5 rounded-[10px] gap-2 font-medium"
             >
               {isLoading ? (
-                <Icon name="Loader2" size={20} className="animate-spin" />
+                <Icon name="Loader2" size={14} className="animate-spin" />
               ) : (
-                <Icon name="Search" size={20} />
+                <Icon name="Search" size={14} />
               )}
+              Найти
             </Button>
           </div>
-        </div>
+        </form>
 
-        <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Icon name="Shield" size={14} />
+        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/40">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Icon name="Shield" size={12} />
             <span>Безопасный поиск</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Icon name="Zap" size={14} />
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Icon name="Zap" size={12} />
             <span>Мгновенный результат</span>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
