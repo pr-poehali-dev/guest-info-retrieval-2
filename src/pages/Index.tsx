@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Sidebar from "@/components/Sidebar";
 import SearchPanel from "@/components/SearchPanel";
@@ -22,6 +22,8 @@ interface GuestData {
   comment?: string;
 }
 
+const OPEN_API_BASE = "https://open-api.p-h.app/api/v2";
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("search");
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +41,7 @@ const Index = () => {
     if (!apiToken) {
       toast({
         title: "Нет API-токена",
-        description: "Перейдите в Настройки и введите токен PRIME HILL",
+        description: "Перейдите в Настройки и введите openAPI токен PRIME HILL",
         variant: "destructive",
       });
       setActiveTab("settings");
@@ -49,48 +51,67 @@ const Index = () => {
     setIsLoading(true);
     try {
       const formattedPhone = phone.startsWith("7") ? phone : "7" + phone;
-      const url = `https://loyalty-api.p-h.app/api/v3/GetClient/${apiToken}?phone=${formattedPhone}`;
+
+      const url = `${OPEN_API_BASE}/getClient?token=${encodeURIComponent(apiToken)}&phone=${formattedPhone}`;
+      console.log("Fetching:", url.replace(apiToken, "***"));
 
       const response = await fetch(url);
-      const data = await response.json();
+      const text = await response.text();
+      console.log("Response status:", response.status, "body:", text.substring(0, 500));
 
-      if (data.error) {
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
         toast({
-          title: "Гость не найден",
-          description: data.error || "Проверьте номер телефона и попробуйте снова",
+          title: "Ошибка ответа",
+          description: "Сервер вернул некорректный ответ. Проверьте токен.",
           variant: "destructive",
         });
         setGuest(null);
         return;
       }
 
-      const client = data.client || data;
+      if (!response.ok || data.error || data.errorMessage) {
+        toast({
+          title: "Ошибка",
+          description: data.error || data.errorMessage || data.message || `Ошибка ${response.status}`,
+          variant: "destructive",
+        });
+        setGuest(null);
+        return;
+      }
+
+      const client = data.client || data.guest || data.data || data;
+      console.log("Client data:", JSON.stringify(client).substring(0, 500));
+
+      const getName = () => {
+        if (client.name) return client.name;
+        const parts = [client.lastName, client.firstName, client.middleName].filter(Boolean);
+        return parts.length > 0 ? parts.join(" ") : "Гость";
+      };
 
       setGuest({
-        name: client.name || client.firstName
-          ? `${client.lastName || ""} ${client.firstName || ""} ${client.middleName || ""}`.trim()
-          : "Без имени",
+        name: getName(),
         phone: `+${formattedPhone}`,
         email: client.email || undefined,
-        birthday: client.birthday || client.birthDate || undefined,
-        cardNumber: client.cardNumber || client.card?.number || undefined,
-        templateName: client.templateName || client.card?.templateName || client.loyaltyLevel || undefined,
-        bonusBalance: client.bonusBalance ?? client.balance ?? client.card?.balance ?? 0,
-        totalSpent: client.totalSum ?? client.totalSpent ?? 0,
-        visits: client.totalVisits ?? client.visits ?? 0,
-        registrationDate: client.registrationDate || client.createdAt || undefined,
-        gender: client.gender || undefined,
-        comment: client.comment || undefined,
+        birthday: client.birthday || client.birthDate || client.dateOfBirth || undefined,
+        cardNumber: client.cardNumber || client.card?.number || client.walletCardNumber || undefined,
+        templateName: client.templateName || client.card?.templateName || client.loyaltyLevel || client.template?.name || undefined,
+        bonusBalance: client.bonusBalance ?? client.balance ?? client.card?.balance ?? client.wallet?.balance ?? 0,
+        totalSpent: client.totalSum ?? client.totalSpent ?? client.sumOfOrders ?? 0,
+        visits: client.totalVisits ?? client.visits ?? client.ordersCount ?? 0,
+        registrationDate: client.registrationDate || client.createdAt || client.createDate || undefined,
+        gender: client.gender || client.sex || undefined,
+        comment: client.comment || client.note || undefined,
       });
 
-      toast({
-        title: "Гость найден",
-        description: `${client.name || client.firstName || "Гость"} успешно найден в системе`,
-      });
+      toast({ title: "Гость найден!" });
     } catch (err) {
+      console.error("Search error:", err);
       toast({
         title: "Ошибка подключения",
-        description: "Не удалось связаться с PRIME HILL API. Проверьте токен и попробуйте снова.",
+        description: "Не удалось связаться с PRIME HILL API. Проверьте интернет и попробуйте снова.",
         variant: "destructive",
       });
     } finally {

@@ -1,3 +1,4 @@
+import React from "react";
 import Icon from "@/components/ui/icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
